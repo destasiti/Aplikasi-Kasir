@@ -95,6 +95,8 @@ Route::middleware(['auth'])->group(function () {
     
 Route::get('/kasir/create', [UserController::class, 'createKasir'])->name('kasir.create');
 Route::post('/kasir/store', [UserController::class, 'storeKasir'])->name('kasir.store');
+Route::put('produk/{id}/update-stok', [ProdukController::class, 'updateStok'])->name('produk.update_stok');
+Route::get('produk/cek-kedaluwarsa', [ProdukController::class, 'cekKedaluwarsa'])->name('produk.cek_kedaluwarsa');
 
 
 });

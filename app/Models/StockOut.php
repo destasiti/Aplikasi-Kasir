@@ -10,8 +10,8 @@ class StockOut extends Model
   
         use HasFactory;
         protected $table = 'stock_out';
-        protected $primaryKey = 'Stock_Out_ID';
-        protected $fillable = ['ProdukID', 'Jumlah', 'HargaJual', 'TanggalKeluar'];
+        protected $primaryKey = 'StockOutID';
+        protected $fillable = ['ProdukID', 'Jumlah', 'TanggalKeluar'];
     
         public function produk()
         {

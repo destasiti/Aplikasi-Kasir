@@ -14,10 +14,9 @@ class CreateStockOutTable extends Migration
     public function up()
     {
         Schema::create('stock_out', function (Blueprint $table) {
-            $table->id('Stock_Out_ID');
+            $table->bigIncrements('StockOutID');
             $table->unsignedBigInteger('ProdukID');
-            $table->integer('Jumlah');
-            $table->decimal('HargaJual', 10, 2);
+            $table->unsignedBigInteger('Jumlah');
             $table->date('TanggalKeluar');
             $table->timestamps();
         });

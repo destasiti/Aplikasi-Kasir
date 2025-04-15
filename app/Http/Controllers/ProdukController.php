@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\StockIn;
+use App\Models\StockOut;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -112,5 +113,44 @@ class ProdukController extends Controller
 
     return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus.');
 }
+
+public function cekKedaluwarsa()
+{
+    // Ambil produk yang kedaluwarsa hari ini
+    $produkKedaluwarsa = Produk::whereHas('stock_in', function ($query) {
+        $query->whereDate('Kedaluwarsa', '=', Carbon::today()->toDateString());
+    })->get();
+
+    return view('produk.kedaluwarsa', compact('produkKedaluwarsa'));
+}
+
+public function updateStok(Request $request, $id)
+{
+    // Cari produk berdasarkan ID
+    $produk = Produk::findOrFail($id);
+
+    // Periksa apakah checkbox untuk kedaluwarsa dicentang
+    if ($request->has('cek_kedaluwarsa')) {
+        // Update stok produk menjadi 0
+        $produk->Stok = 0;
+        
+        // Pindahkan produk ke tabel barang keluar atau pengeluaran (misalnya)
+        StockOut::create([
+            'ProdukID' => $produk->ProdukID,
+            'Jumlah' => $produk->Stok,
+            'TanggalKeluar' => Carbon::now(),
+        ]);
+
+        // Simpan perubahan
+        $produk->save();
+
+        // Set notifikasi sukses
+        session()->flash('message', 'Produk kedaluwarsa sudah diproses!');
+    }
+
+    // Kembali ke halaman produk dengan notifikasi
+    return redirect()->route('produk.index');
+}
+
 
     }

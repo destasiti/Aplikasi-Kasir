@@ -93,20 +93,27 @@
                                     <td>{{ $item->kategori ? $item->kategori->NamaKategori : '-' }}</td>
 
                                     <!-- Kedaluwarsa -->
-                                    <td @if (!$kedaluwarsa)  @endif>
+                                  <td>
+    @if ($kedaluwarsaText === '-')
+        <span class="badge bg-danger">Belum Diisi</span>
+    @else
+        @if ($isExpired)
+            <span class="badge bg-danger">{{ $kedaluwarsaText }}</span>
+            <!-- Form untuk menandai produk yang sudah kedaluwarsa -->
+            <form action="{{ route('produk.update_stok', $item->ProdukID) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="checkbox" name="cek_kedaluwarsa" value="1" id="cek_{{ $item->ProdukID }}" onchange="this.form.submit()" 
+    @if($isExpired) checked @endif>
+<label for="cek_{{ $item->ProdukID }}">Cek untuk stok kedaluwarsa</label>
 
-                                        @if ($kedaluwarsaText === '-')
-                                            <span class="badge bg-danger">Belum Diisi</span>
-                                            <span class="badge bg-success">{{ $kedaluwarsaText }}</span>
+            </form>
+        @else
+            {{ $kedaluwarsaText }}
+        @endif
+    @endif
+</td>
 
-                                        @else
-                                            @if ($isExpired)
-                                                <span class="badge bg-danger">{{ $kedaluwarsaText }}</span>
-                                            @else
-                                                {{ $kedaluwarsaText }}
-                                            @endif
-                                        @endif
-                                    </td>
 
 
                                     <!-- Aksi -->
