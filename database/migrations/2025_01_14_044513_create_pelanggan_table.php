@@ -16,7 +16,7 @@ class CreatePelangganTable extends Migration
         Schema::create('pelanggan', function (Blueprint $table) {
             $table->id('PelangganID');
             $table->string('NamaPelanggan');
-            $table->text('Alamat');
+            $table->text('Alamat'); 
             $table->string('Email')->unique();
             $table->string('NomorTelepon', 15)->nullable();
             $table->enum('JenisKelamin', ['laki-laki', 'perempuan']);

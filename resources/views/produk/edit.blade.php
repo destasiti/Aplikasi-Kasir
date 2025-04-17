@@ -54,19 +54,23 @@
                     </div> --}}
                     
                     <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label" for="KategoriID">Kategori Produk</label>
+                        <label class="col-sm-3 col-form-label d-flex align-items-center" for="KategoriID">Kategori Produk</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bx bx-list-ul"></i></span>
-                                <select name="KategoriID" id="KategoriID" class="form-control select2" required>
+                                <select name="KategoriID" id="KategoriID" class="form-select select2" required>
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach ($kategori as $k)
-                                        <option value="{{ $k->KategoriID }}" {{ old('KategoriID', $produk->KategoriID) == $k->KategoriID ? 'selected' : '' }}>{{ $k->NamaKategori }}</option>
+                                        <option value="{{ $k->KategoriID }}" {{ old('KategoriID', $produk->KategoriID ?? '') == $k->KategoriID ? 'selected' : '' }}>
+                                            {{ $k->NamaKategori }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                     </div>
+                    
+                    
                     
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Foto Produk</label>

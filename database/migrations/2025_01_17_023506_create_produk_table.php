@@ -17,15 +17,16 @@ class CreateProdukTable extends Migration
         $table->id('ProdukID');
         $table->string('NamaProduk');
         $table->decimal('Harga', 10, 2);
-        $table->integer('Stok')->default(0); 
+        $table->integer('Stok')->default(0);
+        $table->date('Kedaluwarsa')->nullable(); 
+        $table->string('status')->nullable(); 
         $table->unsignedBigInteger('KategoriID'); 
         $table->string('FotoProduk')->nullable(); // Simpan nama file gambar
         $table->timestamps(); 
     });
-
-
-}
+    } 
        
+    
     /**
      * Reverse the migrations.
      *

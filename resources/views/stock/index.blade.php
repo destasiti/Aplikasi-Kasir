@@ -157,8 +157,7 @@
                                             <td>{{ $loop->iteration + ($stockIns->currentPage() - 1) * $stockIns->perPage() }}</td>
                                             <td class="text-start">{{ $stock->produk->NamaProduk ?? 'Tidak Ditemukan' }}</td>
                                             <td class="text-start">{{ $stock->supplier->NamaSupplier ?? 'Tidak Ditemukan' }}</td>
-                                            <td>{{ $stock->Jumlah }}</td>
-                                            <td>Rp {{ number_format($stock->HargaBeli, 0, ',', '.') }}</td>
+                                            <td>{{ $stock->Jumlah }}</td>                                            <td>Rp {{ number_format($stock->HargaBeli, 0, ',', '.') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($stock->TanggalMasuk)->format('d-m-Y') }}</td>
                                             <td class="{{ \Carbon\Carbon::parse($stock->Kedaluwarsa)->isPast() ? 'bg-danger text-white' : '' }}">
                                                 {{ \Carbon\Carbon::parse($stock->Kedaluwarsa)->format('d-m-Y') }}
@@ -180,60 +179,6 @@
                     </div>
                 </div>
             </div>
-            
-
-
-          <!-- DAFTAR STOK PRODUK -->
-<div class="card shadow-sm mt-4">
-    <div class="card-header bg-info text-white d-flex align-items-center justify-content-between">
-        <h5 class="mb-0 text-white">MANAJEMEN PRODUK</h5>
-        <small>Keseluruhan Produk SMKI</small>
-    </div>
-    <div class="card-body p-4">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead class="text-center bg-light">
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Produk</th>
-                        <th>Stok</th>
-                        <th>Harga</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(isset($produk) && $produk->isNotEmpty())
-                        @foreach ($produk as $index => $item)
-                            <tr class="text-center">
-                                <td>{{ $index + 1 + ($produk->currentPage() - 1) * $produk->perPage() }}</td>
-                                <td class="text-start">{{ $item->NamaProduk ?? 'Data tidak ditemukan' }}</td>
-                                <td class="text-center">
-                                    @if($item->Stok === 0)
-                                        <span class="badge bg-danger text-white">Kosong</span>
-                                    @else
-                                        {{ $item->Stok }}
-                                    @endif
-                                </td>
-                                
-                                <td>Rp {{ number_format($item->Harga, 0, ',', '.') }}</td>
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td colspan="4" class="text-center">Tidak ada data produk</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
-        <!-- Pagination Links -->
-        <div class="mt-3 d-flex justify-content-between align-items-center">
-            {{ $produk->links('pagination::bootstrap-4') }}
-            <p class="mt-2">Menampilkan {{ $produk->count() }} dari {{ $produk->total() }} data Produk.</p>
-        </div>
-    </div>
-</div>
-
-
 
             <!-- SCRIPT SELECT2 & FORMAT RUPIAH -->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>

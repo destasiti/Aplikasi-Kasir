@@ -35,15 +35,25 @@ class AdminController extends Controller
         // Ambil produk dengan stok ≤ 5
         $produkHampirHabis = Produk::where('Stok', '<=', 5)->get();
     
-        // Produk kadaluarsa hari ini
-        $produkKedaluwarsaHariIni = Produk::whereHas('stock_in', function ($query) use ($today) {
-            $query->whereDate('Kedaluwarsa', $today);
-        })->get();
+            $today = Carbon::today();
         
-        // Produk mendekati kadaluarsa (30 hari ke depan)
-        $produkMenjelangKedaluwarsa = Produk::whereHas('stock_in', function ($query) use ($today) {
-            $query->whereBetween('Kedaluwarsa', [$today, $today->copy()->addDays(30)]);
-        })->get();
+            // $produkKedaluwarsaHariIni = Produk::with(['stock_in' => function ($query) use ($today) {
+            //     $query->whereDate('Kedaluwarsa', $today)
+            //           ->where('Jumlah', '>', 0);
+            // }])->get()->filter(function ($produk) {
+            //     return $produk->stock_in->first() && $produk->stock_in->first()->Jumlah > 0;
+            // });
+            
+
+        // // Produk mendekati kedaluwarsa (tapi belum diproses)
+        // $produkMenjelangKedaluwarsa = Produk::with(['stock_in' => function ($query) use ($today) {
+        //     $query->whereBetween('Kedaluwarsa', [$today, $today->copy()->addDays(30)])
+        //         ->where('Jumlah', '>', 0); // Tambah filter ini juga
+        //         }])->get()->filter(function ($produk) {
+        //             return $produk->stock_in && $produk->stock_in->Jumlah > 0;
+        //         });
+
+        
         
         $totalProduk = Produk::count();
         $totalPelanggan = Pelanggan::count();
@@ -94,9 +104,10 @@ class AdminController extends Controller
             'totalKategori',
             'totalPelanggan',
             'produkHampirHabis',
-            'produkKedaluwarsaHariIni',
-            'produkMenjelangKedaluwarsa',
+            // 'produkKedaluwarsaHariIni',
+            // 'produkMenjelangKedaluwarsa',
             'persentaseKenaikan',
+            'today',
             'totalPenjualanBulanIni'
         ));
     }

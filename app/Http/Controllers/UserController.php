@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewCashierAccountMail;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -23,15 +25,20 @@ class UserController extends Controller
             'password' => 'required|min:6|confirmed',
             'role_as' => 'required', 
         ]);
+        
+        // Simpan password asli untuk dikirim via email
+        $plainPassword = $request->password;
             
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_as' => $request->role_as,
         ]);
+        
+        // Kirim email ke user baru
+        Mail::to($user->email)->send(new NewCashierAccountMail($user->name, $user->email, $plainPassword));
     
-        return redirect()->route('kasir.create')->with('success', 'Akun kasir berhasil dibuat!');
+        return redirect()->route('kasir.create')->with('success', 'Akun kasir berhasil dibuat dan email notifikasi telah dikirim!');
     }
-    
 }

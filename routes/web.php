@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\StockOutController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PenjualanController;
@@ -64,12 +65,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pembayaran/create/{id}', [PembayaranController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran/store/{penjualanId}', [PembayaranController::class, 'store'])->name('pembayaran.store');
     Route::get('/pembayaran/struk/{id}', [PembayaranController::class, 'struk'])->name('pembayaran.struk');
+    Route::get('/produk/sync-stock/{id?}', [ProdukController::class, 'syncStock'])->name('produk.syncStock');
 
     // Resource Routes (CRUD)
     Route::resource('transaksi', TransaksiController::class);
     Route::resource('supplier', SupplierController::class);
     Route::resource('kategori', KategoriController::class);
     Route::resource('produk', ProdukController::class);
+    Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
     Route::resource('pelanggan', PelangganController::class);
     Route::resource('penjualan', PenjualanController::class);
 
@@ -92,13 +95,28 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kasir/store', [UserController::class, 'storeKasir'])->name('kasir.store');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    
+    // Tambahkan route berikut ke routes/web.php
+
+// Route untuk sinkronisasi stok (satu produk atau semua)
+Route::get('/produk/sync-stock/{id?}', [ProdukController::class, 'syncStock'])->name('produk.syncStock');
 Route::get('/kasir/create', [UserController::class, 'createKasir'])->name('kasir.create');
 Route::post('/kasir/store', [UserController::class, 'storeKasir'])->name('kasir.store');
-Route::put('produk/{id}/update-stok', [ProdukController::class, 'updateStok'])->name('produk.update_stok');
 Route::get('produk/cek-kedaluwarsa', [ProdukController::class, 'cekKedaluwarsa'])->name('produk.cek_kedaluwarsa');
-
-
+// Route::post('/produk/{id}/update-stok', [ProdukController::class, 'updateStok'])->name('produk.updateStok');
+// Route::delete('/barang-keluar/{id}', [StockOutController::class, 'destroy'])->name('stock_out.destroy');
+// Route::get('/barang-keluar', [StockOutController::class, 'index'])->name('stock_out.index');
+// Route::get('/barang-keluar/create', [StockOutController::class, 'create'])->name('stock_out.create');
+// Route::post('/barang-keluar', [StockOutController::class, 'store'])->name('stock_out.store');
+Route::post('/produk/pindah-ke-stock-out', [ProdukController::class, 'pindahKeStockOut'])->name('produk.pindahKeStockOut');
+Route::get('/stock-out', [StockOutController::class, 'index'])->name('stock_out.index');
+Route::get('/stock-out/create', [StockOutController::class, 'create'])->name('stock_out.create');
+Route::post('/stock-out', [StockOutController::class, 'store'])->name('stock_out.store');
+Route::delete('/stock-out/{id}', [StockOutController::class, 'destroy'])->name('stock_out.destroy');
+Route::put('/kasir/reset/{id}', [UserController::class, 'resetPassword'])->name('kasir.reset');
+// Routes untuk IndoRegion// routes/web.php
+Route::get('/regencies', [PelangganController::class, 'getRegencies'])->name('regencies');
+Route::get('/districts', [PelangganController::class, 'getDistricts'])->name('districts');
+Route::get('/villages', [PelangganController::class, 'getVillages'])->name('villages');
 });
 
 /*

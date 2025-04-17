@@ -13,7 +13,7 @@ class Pembayaran extends Model
     protected $primaryKey = 'PembayaranID';
     public $timestamps = true;
 
-    protected $fillable = [
+    protected  $fillable = [
         'PenjualanID',
         'MetodeBayar',
         'StatusBayar',

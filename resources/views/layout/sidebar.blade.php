@@ -63,6 +63,12 @@
           <div data-i18n="Transaksi">Data Pemasukan</div>
         </a>
       </li>
+      <li class="menu-item" id="menu-stockout">
+        <a href="{{ route('stock_out.index') }}" class="menu-link">
+            <i class="menu-icon bx bx-log-out"></i>
+            <div data-i18n="Pengeluaran">Data Pengeluaran</div>
+        </a></li>   
+      
       <li class="menu-item" id="menu-laporan">
         <a href="/laporan/penjualan" class="menu-link">
           <i class="menu-icon bx bx-file"></i>

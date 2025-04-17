@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use PDF;
 use Illuminate\Http\Request;
 use App\Models\StockIn;
@@ -31,8 +29,7 @@ class StockController extends Controller
     
         return view('stock.index', compact('stockIns', 'stockOuts', 'produk', 'supplier', 'tanggalMulai', 'tanggalSelesai'));
     }
-    
-    
+
     public function index(Request $request)
     {
         // Ambil data produk dengan pagination 5 per halaman
@@ -58,52 +55,32 @@ class StockController extends Controller
         
         return view('stock.index', compact('stockIns', 'stockOuts', 'produk', 'supplier'));
     }
-    
 
-    public function storeStockIn(Request $request)
-    {
-        $request->validate([
-            'ProdukID' => 'required|exists:produk,ProdukID',
-            'SupplierID' => 'required',
-            'Jumlah' => 'required|integer|min:1',
-            'HargaBeli' => 'nullable|numeric|min:1',
-            'TanggalMasuk' => 'required|date',
-            'Kedaluwarsa' => 'required|date|after:TanggalMasuk',
-        ]);
+public function storeStockIn(Request $request)
+{
+    $request->validate([
+        'ProdukID'       => 'required|exists:produk,ProdukID',
+        'SupplierID'     => 'required',
+        'Jumlah'         => 'required|integer|min:1',
+        'HargaBeli'      => 'nullable|numeric|min:1',
+        'TanggalMasuk'   => 'required|date',
+        'Kedaluwarsa'    => 'required|date|after:TanggalMasuk',
+    ]);
 
-        StockIn::create($request->all());
+    $stockIn = StockIn::create($request->all());
 
-        $produk = Produk::find($request->ProdukID);
-        if ($produk) {
-            $produk->increment('Stok', $request->Jumlah);
-        }
+    $produk = Produk::find($request->ProdukID);
+    if ($produk) {
+        // Tambah stok
+        $produk->increment('Stok', $request->Jumlah);
 
-        return redirect()->back()->with('success', 'Stok berhasil ditambahkan');
+        // Update Kedaluwarsa di produk (kalau kamu masih pakai field ini)
+        $produk->Kedaluwarsa = $request->Kedaluwarsa;
+        $produk->save();        
     }
 
-    public function storeStockOut(Request $request)
-    {
-        $request->validate([
-            'ProdukID' => 'required|exists:produk,ProdukID',
-            'Jumlah' => 'required|integer|min:1',
-            'HargaJual' => 'required|numeric',
-            'TanggalKeluar' => 'required|date',
-        ]);
-
-        $produk = Produk::find($request->ProdukID);
-        if (!$produk) {
-            return redirect()->back()->with('error', 'Produk tidak ditemukan');
-        }
-
-        if ($produk->Stok < $request->Jumlah) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi');
-        }
-
-        StockOut::create($request->all());
-        $produk->decrement('Stok', $request->Jumlah);
-
-        return redirect()->back()->with('success', 'Barang berhasil keluar dari stok');
-    }
+    return redirect()->back()->with('success', 'Stok berhasil ditambahkan');
+}
 
     public function downloadPDF(Request $request)
     {
@@ -129,4 +106,35 @@ class StockController extends Controller
 
         return $pdf->download('Laporan_Stock_' . now()->format('Y-m-d') . '.pdf');
     }
+
+    public function storeStockOut(Request $request)
+{
+    $request->validate([
+        'ProdukID' => 'required|exists:produk,ProdukID',
+        'Jumlah' => 'required|integer|min:1',
+        'TanggalKeluar' => 'required|date',
+        'Keterangan' => 'nullable|string',  // Keterangan bisa diisi atau tidak
+    ]);
+
+    // Ambil produk yang keluar
+    $produk = Produk::findOrFail($request->ProdukID);
+
+    // Pastikan jumlah stok cukup
+    if ($produk->Stok < $request->Jumlah) {
+        return back()->with('error', 'Stok tidak cukup.');
+    }
+
+    // Kurangi stok produk
+    $produk->decrement('Stok', $request->Jumlah);
+
+    // Simpan data barang keluar dengan keterangan
+    StockOut::create([
+        'ProdukID' => $produk->ProdukID,
+        'Jumlah' => $jumlah,
+        'TanggalKeluar' => now(),
+        'Keterangan' => $request->Keterangan ?? 'Kedaluwarsa',
+    ]);
+
+    return redirect()->route('produk.index')->with('success', 'Barang berhasil dikeluarkan.');
+}
 }

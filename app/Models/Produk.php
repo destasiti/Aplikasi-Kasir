@@ -15,24 +15,30 @@ class Produk extends Model
         'Harga',
         'Stok',
         'KategoriID',
+        'Kedaluwarsa',
         'FotoProduk'
     ];
-    public function stock_in()
-    {
-        return $this->hasOne(StockIn::class, 'ProdukID')->latest();
-    }
-    
-    
+
+    public function stokMasukTerbaru()
+{
+    return $this->hasOne(StockIn::class, 'ProdukID');
+}
+public function stockIns()
+{
+    return $this->hasMany(StockIn::class, 'ProdukID');
+}
+public function stockOuts()
+{
+    return $this->hasMany(StockOut::class, 'ProdukID');
+}
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'KategoriID'); 
     }
-
     public function detailpenjualan()
     {
         return $this->hasMany(DetailPenjualan::class);
     }
-
     public function getFormattedHargaAttribute()
     {
         return 'Rp ' . number_format($this->Harga, 0, ',', '.');

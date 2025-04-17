@@ -50,30 +50,22 @@
                         }
                     </script>
                     
-                    {{-- <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label" for="Stok">Stok</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bx bx-layer"></i></span>
-                                <input type="number" class="form-control" id="Stok" name="Stok" min="1" placeholder="Masukkan Stok Tersedia" value="{{ old('Stok') }}" required>
-                            </div>
-                        </div>
-                    </div> --}}
-                    
                     <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label" for="KategoriID">Kategori Produk</label>
+                        <label class="col-sm-3 col-form-label">Kategori Produk</label>
                         <div class="col-sm-9">
-                            <div class="input-group">
-                                <select name="KategoriID" id="KategoriID" class="form-control select2" required>
-                                    <option value="">-- Pilih Kategori --</option>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="input-group-text bg-light"><i class="bx bx-list-ul"></i></span>
+                                <select name="KategoriID" class="form-select produk-select w-100" required>
+                                    <option value="" disabled selected>Pilih Kategori</option>
                                     @foreach ($kategori as $k)
-                                        <option value="{{ $k->KategoriID }}" {{ old('KategoriID') == $k->KategoriID ? 'selected' : '' }}>{{ $k->NamaKategori }}</option>
-                                    @endforeach
+                                    <option value="{{ $k->KategoriID }}" {{ old('KategoriID', $produk->KategoriID ?? '') == $k->KategoriID ? 'selected' : '' }}>
+                                        {{ $k->NamaKategori }}
+                                    </option>                                    @endforeach
                                 </select>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Foto Produk</label>
                         <div class="col-sm-9">

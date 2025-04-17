@@ -18,9 +18,11 @@ class CreateStockOutTable extends Migration
             $table->unsignedBigInteger('ProdukID');
             $table->unsignedBigInteger('Jumlah');
             $table->date('TanggalKeluar');
+            $table->string('Keterangan')->nullable();
+            $table->date('Kedaluwarsa')->nullable(); 
             $table->timestamps();
-        });
-    }
+        });}
+
             
             
    

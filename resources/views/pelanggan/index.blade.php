@@ -60,7 +60,7 @@
                             <tr>
                                 <td>{{ $index + 1 + ($pelanggan->currentPage() - 1) * $pelanggan->perPage() }}</td>
                                 <td>{{ $item->NamaPelanggan }}</td>
-                                <td>{{ $item->Alamat }}</td>
+                                <td>{{ $item->Alamat . ', ' . $item->village->name . ', ' . $item->district->name . ', ' . $item->regency->name . ', ' . $item->province->name }}</td>
                                 <td>{{ $item->Email }}</td>
                                 <td>{{ $item->NomorTelepon }}</td>
                                 <td>{{ $item->JenisKelamin }}</td>
@@ -109,3 +109,4 @@
     }
 </script>
 @endsection
+

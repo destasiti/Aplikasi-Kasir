@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pelanggan;
 use PDF;
+// Import model IndoRegion
+use App\Models\Province;
+use App\Models\Regency;
+use App\Models\District;
+use App\Models\Village;
 
 class PelangganController extends Controller
 {
@@ -14,15 +19,37 @@ class PelangganController extends Controller
         // Tambahkan fitur pencarian berdasarkan nama
         $search = $request->input('search');
         $pelanggan = Pelanggan::where('NamaPelanggan', 'LIKE', '%' . $search . '%')
-        ->orderBy('created_at', 'desc') 
-                ->paginate(5);
+            ->orderBy('created_at', 'desc') 
+            ->paginate(5);
         return view('pelanggan.index', compact('pelanggan'));
     }
 
     // Menampilkan form untuk menambah pelanggan baru
     public function create()
     {
-        return view('pelanggan.create');
+        $provinces = Province::all();
+        return view('pelanggan.create', compact('provinces'));
+    }
+
+    // Mendapatkan data kabupaten/kota berdasarkan provinsi
+    public function getRegencies(Request $request)
+    {
+        $regencies = Regency::where('province_id', $request->province_id)->get();
+        return response()->json($regencies);
+    }
+
+    // Mendapatkan data kecamatan berdasarkan kabupaten/kota
+    public function getDistricts(Request $request)
+    {
+        $districts = District::where('regency_id', $request->regency_id)->get();
+        return response()->json($districts);
+    }
+
+    // Mendapatkan data desa/kelurahan berdasarkan kecamatan
+    public function getVillages(Request $request)
+    {
+        $villages = Village::where('district_id', $request->district_id)->get();
+        return response()->json($villages);
     }
 
     // Menyimpan pelanggan baru ke database
@@ -32,6 +59,10 @@ class PelangganController extends Controller
         $validated = $request->validate([
             'NamaPelanggan' => 'required|string|max:255',
             'Alamat' => 'required|string',
+            'province_id' => 'required',
+            'regency_id' => 'required',
+            'district_id' => 'required',
+            'village_id' => 'required',
             'Email' => 'required|email|unique:pelanggan',
             'NomorTelepon' => 'required|regex:/^[0-9]+$/|max:15',
             'JenisKelamin' => 'required|in:laki-laki,perempuan',
@@ -51,33 +82,40 @@ class PelangganController extends Controller
         return view('pelanggan.show', compact('pelanggan'));
     }
 
-    // Menampilkan form untuk mengedit pelanggan
     public function edit($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
-        return view('pelanggan.edit', compact('pelanggan'));
+        $provinces = Province::all();
+        
+        // Pre-load related data dengan nama yang benar
+        $regencies = Regency::where('province_id', $pelanggan->province_id)->get();
+        $districts = District::where('regency_id', $pelanggan->regency_id)->get(); 
+        $villages = Village::where('district_id', $pelanggan->district_id)->get();
+        
+        return view('pelanggan.edit', compact('pelanggan', 'provinces', 'regencies', 'districts', 'villages'));
     }
-
-    // Memperbarui data pelanggan
     public function update(Request $request, $id)
     {
-        // Validasi input
+        // Find the pelanggan first
+        $pelanggan = Pelanggan::findOrFail($id);
+        
+        // Validasi input dengan nama field yang benar dan primary key yang sesuai
         $validated = $request->validate([
             'NamaPelanggan' => 'required|string|max:255',
             'Alamat' => 'required|string',
-            'Email' => 'required|email|unique:pelanggan,Email,' . $id . ',PelangganID',
+            'province_id' => 'required',
+            'regency_id' => 'required',
+            'district_id' => 'required',
+            'village_id' => 'required',
+            'Email' => 'required|email|unique:pelanggan,Email,' . $id . ',PelangganID', // Asumsikan primary key adalah PelangganID
             'NomorTelepon' => 'required|regex:/^[0-9]+$/|max:15',
             'JenisKelamin' => 'required|in:laki-laki,perempuan',
         ]);
-
-        // Menemukan pelanggan yang akan diperbarui
-        $pelanggan = Pelanggan::findOrFail($id);
+    
         $pelanggan->update($validated);
-
-        // Redirect ke halaman daftar pelanggan dengan notifikasi
+    
         return redirect()->route('pelanggan.index')->with('success', 'Pelanggan berhasil diperbarui.');
     }
-
     // Menghapus pelanggan
     public function destroy($id)
     {
@@ -97,5 +135,4 @@ class PelangganController extends Controller
         // Langsung download tanpa perlu klik tombol lagi
         return $pdf->download('laporan_pelanggan.pdf');
     }
-    
 }

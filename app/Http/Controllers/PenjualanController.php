@@ -65,44 +65,46 @@ class PenjualanController extends Controller
             'JumlahProduk.*' => 'integer|min:1',
         ]);
     
-        // Jika pelanggan bukan member, biarkan NULL
         $pelangganID = $request->PelangganID ?? null;
     
-        // Buat transaksi utama
         $penjualan = Penjualan::create([
             'TanggalPenjualan' => $request->TanggalPenjualan,
             'PelangganID' => $pelangganID,
-            'TotalHarga' => 0, // Akan dihitung ulang
-            'UserID' => Auth::id(), // ← Tambahan ini
-
+            'TotalHarga' => 0,
+            'UserID' => Auth::id(),
         ]);
     
         $totalHarga = 0;
     
         foreach ($request->ProdukID as $key => $produkID) {
             $produk = Produk::findOrFail($produkID);
-            $subTotal = $request->JumlahProduk[$key] * $produk->Harga;
+            $jumlahDibeli = $request->JumlahProduk[$key];
+    
+            // Cek stok cukup
+            if ($produk->Stok < $jumlahDibeli) {
+                return redirect()->back()->with('error', "Stok produk {$produk->NamaProduk} tidak mencukupi.");
+            }
+    
+            $subTotal = $jumlahDibeli * $produk->Harga;
             $totalHarga += $subTotal;
-
+    
             DetailPenjualan::create([
                 'PenjualanID' => $penjualan->PenjualanID,
                 'ProdukID' => $produkID,
-                'JumlahProduk' => $request->JumlahProduk[$key],
+                'JumlahProduk' => $jumlahDibeli,
                 'SubTotal' => $subTotal,
             ]);
     
-            // Kurangi stok produk
-            $produk->Stok -= $request->JumlahProduk[$key];
+            // Kurangi stok
+            $produk->Stok -= $jumlahDibeli;
             $produk->save();
         }
-
     
-        // Update total harga transaksi utama
         $penjualan->update(['TotalHarga' => $totalHarga]);
     
         return redirect()->route('pembayaran.create', ['id' => $penjualan->PenjualanID])
             ->with('success', 'Transaksi berhasil ditambahkan.');
-    }
+    }    
     
    
         public function show($id)

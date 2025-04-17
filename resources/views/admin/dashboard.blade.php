@@ -248,7 +248,7 @@
                             </div>
                         </div>
                     </div>
-<p>
+{{-- <p>
                     <!-- Produk Mendekati Kedaluwarsa -->
                     <div class="col-12 mb-3">
                         <div class="card shadow-sm">
@@ -284,7 +284,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div></div></div>
                 <p>
 <div class="row">
@@ -325,43 +325,7 @@
         </div>
     </div>
 
-    <!-- Produk Kedaluwarsa Hari Ini -->
-    <div class="col-md-6 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark">
-                <h5 class="mb-0 text-white">
-                    <i class="fas fa-ban"></i> Produk Kedaluwarsa Hari Ini
-                </h5>
-            </div>
-            <div class="card-body text-center">
-                @if ($produkKedaluwarsaHariIni->count())
-                    <table class="table table-bordered text-center">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Nama Produk</th>
-                                <th>Kedaluwarsa</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($produkKedaluwarsaHariIni as $produk)
-                                <tr>
-                                    <td>{{ $produk->NamaProduk }}</td>
-                                    <td>
-                                        <span class="badge badge-dark bg-dark text-white">
-                                            {{ \Carbon\Carbon::parse($produk->stock_in->Kedaluwarsa)->format('d-m-Y') }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <p class="no-data text-center">Tidak ada produk yang kedaluwarsa hari ini.</p>
-                @endif
-            </div>
-        </div>
-    </div>
-</div><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var ctx = document.getElementById('penjualanChart').getContext('2d');
